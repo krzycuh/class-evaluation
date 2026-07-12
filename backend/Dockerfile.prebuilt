@@ -1,0 +1,24 @@
+# Obraz z gotowego JAR-a zbudowanego na runnerze CI (bez kompilacji w Dockerze).
+# Dzięki temu build multi-arch (amd64 + arm64 dla Raspberry Pi) trwa sekundy —
+# QEMU wykonuje tylko COPY, a nie kompilację Kotlina.
+FROM eclipse-temurin:21-jre-jammy
+
+WORKDIR /app
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system spring \
+  && useradd --system --gid spring --home /app spring
+
+COPY --chown=spring:spring build/libs/*.jar app.jar
+
+USER spring:spring
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+  CMD curl --fail --silent http://localhost:8080/api/health || exit 1
+
+# sh -c, żeby działało JAVA_OPTS z docker-compose (limity pamięci na Raspberry Pi)
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]

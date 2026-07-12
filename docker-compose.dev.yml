@@ -1,0 +1,18 @@
+# Tylko baza — do lokalnego developmentu:
+#   docker compose -f docker-compose.dev.yml up -d
+#   (cd backend && ./gradlew bootRun)
+#   (cd frontend && npm run dev)
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: class_evaluation
+      POSTGRES_USER: class_evaluation
+      POSTGRES_PASSWORD: class_evaluation
+    volumes:
+      - db-dev-data:/var/lib/postgresql/data
+
+volumes:
+  db-dev-data:

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: class-evaluation
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/class_evaluation}
+    username: ${DB_USER:class_evaluation}
+    password: ${DB_PASSWORD:class_evaluation}
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 12h
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}
+
+app:
+  admin:
+    email: ${APP_ADMIN_EMAIL:admin@example.com}
+    password: ${APP_ADMIN_PASSWORD:}
+    display-name: ${APP_ADMIN_NAME:Administrator}
+  bootstrap:
+    class-group-name: ${APP_CLASS_GROUP_NAME:Moja grupa}
+
+logging:
+  level:
+    pl.kma.classevaluation: INFO
