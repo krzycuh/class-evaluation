@@ -31,7 +31,7 @@ tak/nie). Model przewiduje miejsce na rozszerzenie o stan pośredni
 
 | Warstwa    | Technologia | Uwagi |
 |------------|-------------|-------|
-| Frontend   | React 18 + TypeScript + Vite | React Router, TanStack Query, Tailwind CSS |
+| Frontend   | React 18 + TypeScript + Vite | React Router, TanStack Query, CSS custom properties (tokeny z makiet) |
 | Backend    | Kotlin + Spring Boot 3 | REST API, walidacja, Spring Security |
 | Baza       | PostgreSQL 16 | migracje Flyway |
 | Uruchomienie | Docker + docker-compose | multi-stage build, frontend serwowany przez nginx |
@@ -142,7 +142,8 @@ erDiagram
   (rozszerzalne o `IN_PROGRESS`), `note TEXT NULL` (freetext do umiejętności),
   `updated_by FK→users`, `updated_at`
 - `UNIQUE(student_id, skill_id, period_id)` — upsert przy zapisie
-- brak wiersza = „nieocenione" (nie zapisujemy pustych ocen)
+- brak wiersza = „nieocenione"; `value` może być NULL, gdy zapisano samą
+  notatkę bez rozstrzygnięcia
 
 **student_period_notes** — notatka ogólna o dziecku w semestrze
 - `id UUID PK`, `student_id FK`, `period_id FK`, `content TEXT`,
@@ -218,7 +219,8 @@ PDF po stronie serwera (openhtmltopdf) do wysyłki mailem.
 Dane dzieci = dane wrażliwe organizacyjnie — projekt zakłada:
 
 - **Uwierzytelnianie**: sesja w HttpOnly + Secure + SameSite=Lax cookie,
-  hasła Argon2id; brak JWT w localStorage (XSS-odporność).
+  hasła bcrypt (Spring DelegatingPasswordEncoder — łatwa migracja na
+  Argon2id); brak JWT w localStorage (XSS-odporność).
 - **Autoryzacja**: nauczycielka widzi wyłącznie swoje grupy
   (`class_groups.owner_user_id`); rola `ADMIN` zarządza konfiguracją
   umiejętności i okresami. Kontrola dostępu egzekwowana w serwisach
