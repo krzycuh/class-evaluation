@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>Ocena Przedszkolaka — makiety ekranów</title>
+<style>
+  :root {
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --surface-2: #eaf1ee;
+    --ink: #22332e;
+    --muted: #64766f;
+    --line: #d7e2dd;
+    --primary: #2e7d6b;
+    --primary-ink: #ffffff;
+    --primary-soft: #dcece7;
+    --accent: #de9a3c;
+    --accent-soft: #f7ead6;
+    --good: #35915f;
+    --good-soft: #ddf0e4;
+    --warn: #c07a1c;
+    --warn-soft: #f6e8d2;
+    --shadow: 0 10px 30px rgba(34, 51, 46, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131b18;
+      --surface: #1c2622;
+      --surface-2: #24312c;
+      --ink: #e5eeea;
+      --muted: #96a8a0;
+      --line: #32423c;
+      --primary: #4aa38e;
+      --primary-ink: #0e1613;
+      --primary-soft: #24413a;
+      --accent: #e0a552;
+      --accent-soft: #3d3220;
+      --good: #4fb37c;
+      --good-soft: #21372b;
+      --warn: #d99a3e;
+      --warn-soft: #3b2f1c;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131b18;
+    --surface: #1c2622;
+    --surface-2: #24312c;
+    --ink: #e5eeea;
+    --muted: #96a8a0;
+    --line: #32423c;
+    --primary: #4aa38e;
+    --primary-ink: #0e1613;
+    --primary-soft: #24413a;
+    --accent: #e0a552;
+    --accent-soft: #3d3220;
+    --good: #4fb37c;
+    --good-soft: #21372b;
+    --warn: #d99a3e;
+    --warn-soft: #3b2f1c;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --surface-2: #eaf1ee;
+    --ink: #22332e;
+    --muted: #64766f;
+    --line: #d7e2dd;
+    --primary: #2e7d6b;
+    --primary-ink: #ffffff;
+    --primary-soft: #dcece7;
+    --accent: #de9a3c;
+    --accent-soft: #f7ead6;
+    --good: #35915f;
+    --good-soft: #ddf0e4;
+    --warn: #c07a1c;
+    --warn-soft: #f6e8d2;
+    --shadow: 0 10px 30px rgba(34, 51, 46, 0.10);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    margin: 0;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+
+  header.page h1 {
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    text-wrap: balance;
+  }
+  header.page p { color: var(--muted); margin: 0; max-width: 65ch; }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0;
+  }
+  .tabs button {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+  .tabs button:hover { border-color: var(--primary); }
+  .tabs button:focus-visible,
+  .phone button:focus-visible,
+  .phone a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .tabs button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-ink);
+    font-weight: 600;
+  }
+
+  .stage {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .phone {
+    width: 384px;
+    max-width: 100%;
+    height: 740px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: none;
+  }
+  .screen { display: none; flex-direction: column; height: 100%; }
+  .screen.active { display: flex; }
+  .screen-body { flex: 1; overflow-y: auto; }
+
+  .notes { flex: 1; min-width: 260px; max-width: 560px; }
+  .note-set { display: none; }
+  .note-set.active { display: block; }
+  .notes h2 { font-size: 1.05rem; margin: 0 0 10px; }
+  .notes ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 0.92rem; }
+  .notes li { margin-bottom: 8px; }
+  .notes li strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- wspólne elementy aplikacji ---------- */
+  .appbar {
+    background: var(--primary);
+    color: var(--primary-ink);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .appbar .title { font-weight: 700; font-size: 1rem; flex: 1; }
+  .appbar .sub { font-size: 0.75rem; opacity: 0.85; }
+  .chip-select {
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: inherit;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent);
+    color: #3a2a10;
+    display: grid; place-items: center;
+    font-size: 0.72rem; font-weight: 700;
+  }
+  .backbtn {
+    background: none; border: none; color: inherit;
+    font-size: 1.2rem; cursor: pointer; padding: 2px 6px;
+  }
+
+  .bottomnav {
+    display: flex;
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .bottomnav button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 9px 4px 10px;
+    font: inherit;
+    font-size: 0.68rem;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .bottomnav button .ico { font-size: 1.15rem; }
+  .bottomnav button.active { color: var(--primary); font-weight: 700; }
+
+  .searchrow { padding: 12px 16px 4px; display: flex; gap: 8px; }
+  .searchrow input {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font: inherit;
+    font-size: 0.85rem;
+  }
+  .filterrow { padding: 8px 16px; display: flex; gap: 8px; }
+  .filterrow button {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  .filterrow button.active {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .student-list { list-style: none; margin: 0; padding: 6px 12px 16px; }
+  .student-list li { margin-bottom: 8px; }
+  .student-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 12px 14px;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .student-card:hover { border-color: var(--primary); }
+  .student-card .dot {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 0.85rem;
+    flex: none;
+  }
+  .student-card .info { flex: 1; min-width: 0; }
+  .student-card .name { font-weight: 600; font-size: 0.92rem; }
+  .student-card .meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+  .agebadge {
+    font-size: 0.66rem;
+    background: var(--accent-soft);
+    color: var(--warn);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-weight: 700;
+  }
+  .progress {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .progress span { display: block; height: 100%; background: var(--good); border-radius: 999px; }
+  .student-card .count {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .count.done { color: var(--good); font-weight: 700; }
+
+  /* ---------- logowanie ---------- */
+  .login-body {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 32px 28px; gap: 10px; height: 100%;
+    background: linear-gradient(180deg, var(--primary-soft), var(--surface) 60%);
+  }
+  .login-body .logo { font-size: 2.6rem; text-align: center; }
+  .login-body h2 { text-align: center; margin: 0 0 18px; font-size: 1.3rem; }
+  .login-body label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+  .login-body input {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font: inherit;
+    margin-bottom: 8px;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: var(--primary-ink);
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .btn-primary:hover { filter: brightness(1.06); }
+
+  /* ---------- ocenianie ---------- */
+  .savebadge {
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.16);
+    border-radius: 999px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+  .area { border-bottom: 1px solid var(--line); }
+  .area-head {
+    width: 100%;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-2);
+    border: none;
+    padding: 11px 16px;
+    font: inherit; font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .area-head .arrow { transition: transform 0.15s; }
+  .area.open .area-head .arrow { transform: rotate(90deg); }
+  .area-head .score { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+  .area-items { display: none; }
+  .area.open .area-items { display: block; }
+
+  .skill { padding: 12px 16px; border-top: 1px solid var(--line); }
+  .skill .row1 { display: flex; align-items: baseline; gap: 8px; }
+  .skill .stitle { font-size: 0.9rem; font-weight: 600; flex: 1; }
+  .iconbtn {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 0.9rem; padding: 2px 4px;
+  }
+  .skill .desc {
+    display: none;
+    font-size: 0.78rem; color: var(--muted);
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-top: 6px;
+  }
+  .skill.show-desc .desc { display: block; }
+  .togglerow { display: flex; gap: 8px; margin-top: 9px; }
+  .togglerow .tg {
+    flex: 1;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 12px;
+    padding: 10px 6px;
+    font: inherit; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer;
+  }
+  .tg.yes.sel { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+  .tg.no.sel  { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+  .skillnote {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit; font-size: 0.8rem;
+    padding: 8px 10px;
+    resize: vertical;
+    min-height: 40px;
+  }
+  .skill.show-note .skillnote { display: block; }
+  .generalnote { padding: 12px 16px 20px; }
+  .generalnote textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit; font-size: 0.85rem;
+    padding: 10px 12px;
+    min-height: 70px;
+    resize: vertical;
+  }
+  .assess-footer { padding: 0 16px 16px; }
+  .btn-ghost {
+    width: 100%;
+    background: none;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    border-radius: 12px;
+    padding: 11px;
+    font: inherit; font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ---------- konfiguracja umiejętności ---------- */
+  .cfg-skill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--line);
+    font-size: 0.86rem;
+  }
+  .cfg-skill .drag { color: var(--muted); cursor: grab; }
+  .cfg-skill .t { flex: 1; }
+  .cfg-skill .ages { display: flex; gap: 4px; }
+  .cfg-skill .ages span {
+    font-size: 0.62rem; font-weight: 700;
+    background: var(--primary-soft); color: var(--primary);
+    border-radius: 999px; padding: 2px 6px;
+  }
+  .addrow { padding: 10px 16px; }
+  .addrow button {
+    background: none; border: 1px dashed var(--line);
+    color: var(--primary);
+    width: 100%; border-radius: 10px; padding: 8px;
+    font: inherit; font-size: 0.8rem; cursor: pointer;
+  }
+  .editpanel {
+    margin: 12px;
+    border: 1px solid var(--primary);
+    border-radius: 16px;
+    padding: 14px;
+    background: var(--surface);
+  }
+  .editpanel h3 { margin: 0 0 10px; font-size: 0.95rem; }
+  .editpanel label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--muted); margin: 8px 0 3px; }
+  .editpanel input, .editpanel textarea, .editpanel select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font: inherit; font-size: 0.82rem;
+    padding: 8px 10px;
+  }
+  .agepick { display: flex; gap: 6px; margin-top: 4px; }
+  .agepick button {
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font: inherit; font-size: 0.75rem; font-weight: 700;
+    cursor: pointer;
+  }
+  .agepick button.sel {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .editactions { display: flex; gap: 8px; margin-top: 14px; }
+  .editactions .btn-primary { flex: 1; margin: 0; padding: 10px; }
+  .editactions .btn-ghost { flex: 1; }
+
+  /* ---------- raporty ---------- */
+  .reportrow {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.86rem;
+  }
+  .reportrow .n { flex: 1; font-weight: 600; }
+  .status-pill {
+    font-size: 0.68rem; font-weight: 700;
+    border-radius: 999px; padding: 3px 9px;
+  }
+  .status-pill.ready { background: var(--good-soft); color: var(--good); }
+  .status-pill.gen { background: var(--primary-soft); color: var(--primary); }
+  .status-pill.missing { background: var(--warn-soft); color: var(--warn); }
+  .minibtn {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--primary);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font: inherit; font-size: 0.72rem; font-weight: 700;
+    cursor: pointer;
+  }
+  .minibtn:hover { border-color: var(--primary); }
+
+  /* ---------- podgląd raportu ---------- */
+  .report-doc {
+    margin: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 22px 20px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 0.85rem;
+  }
+  .report-doc h2 {
+    text-align: center; font-size: 1.05rem;
+    letter-spacing: 0.04em; margin: 0 0 2px;
+  }
+  .report-doc .rmeta { text-align: center; color: var(--muted); font-size: 0.78rem; margin-bottom: 16px; }
+  .report-doc h3 {
+    font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 4px; margin: 16px 0 8px;
+    font-family: system-ui, sans-serif;
+  }
+  .report-doc h3.good { color: var(--good); border-color: var(--good); }
+  .report-doc h3.work { color: var(--warn); border-color: var(--warn); }
+  .report-doc p, .report-doc li { margin: 0 0 6px; }
+  .report-doc ul { padding-left: 18px; margin: 0; }
+  .report-doc .rec { color: var(--muted); font-style: italic; font-size: 0.8rem; }
+  .report-doc .sig { display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.75rem; color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <h1>🧸 Ocena Przedszkolaka — makiety ekranów</h1>
+    <p>Interaktywne makiety aplikacji do oceny postępów dzieci w grupie przedszkolnej.
+       Klikaj w uczniów, przyciski ocen, akordeony i dolną nawigację — działają jak w docelowej aplikacji.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Ekrany">
+    <button data-screen="login" class="active">E1 · Logowanie</button>
+    <button data-screen="students">E2 · Uczniowie</button>
+    <button data-screen="assess">E3 · Ocena ucznia</button>
+    <button data-screen="skills">E4 · Umiejętności</button>
+    <button data-screen="reports">E5 · Raporty</button>
+    <button data-screen="report">E6 · Raport (podgląd)</button>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+
+      <!-- E1: logowanie -->
+      <section class="screen active" id="scr-login">
+        <div class="login-body">
+          <div class="logo">🧸</div>
+          <h2>Ocena Przedszkolaka</h2>
+          <label for="li-email">E-mail</label>
+          <input id="li-email" type="email" autocomplete="username" value="k.mazurek@przedszkole.pl">
+          <label for="li-pass">Hasło</label>
+          <input id="li-pass" type="password" autocomplete="current-password" value="••••••••••">
+          <button class="btn-primary" data-goto="students">Zaloguj się</button>
+        </div>
+      </section>
+
+      <!-- E2: lista uczniów -->
+      <section class="screen" id="scr-students">
+        <div class="appbar">
+          <div>
+            <div class="title">Biedronki</div>
+            <div class="sub">rok 2026/2027</div>
+          </div>
+          <span style="flex:1"></span>
+          <button class="chip-select">Semestr I ▾</button>
+          <div class="avatar">KM</div>
+        </div>
+        <div class="screen-body">
+          <div class="searchrow">
+            <input type="search" placeholder="🔎 Szukaj ucznia…" aria-label="Szukaj ucznia">
+          </div>
+          <div class="filterrow">
+            <button class="active">Wszyscy (14)</button>
+            <button>Do uzupełnienia (9)</button>
+          </div>
+          <ul class="student-list">
+            <li><button class="student-card" data-goto="assess">
+              <span class="dot">AK</span>
+              <span class="info">
+                <span class="name">Ania Kowalska</span>
+                <span class="meta"><span class="agebadge">4-latki</span>
+                  <span class="progress"><span style="width:80%"></span></span></span>
+              </span>
+              <span class="count">24/30</span>
+            </button></li>
+            <li><button class="student-card" data-goto="assess">
+              <span class="dot">BN</span>
+              <span class="info">
+                <span class="name">Bartek Nowak</span>
+                <span class="meta"><span class="agebadge">4-latki</span>
+                  <span class="progress"><span style="width:100%"></span></span></span>
+              </span>
+              <span class="count done">30/30 ✓</span>
+            </button></li>
+            <li><button class="student-card" data-goto="assess">
+              <span class="dot">CW</span>
+              <span class="info">
+                <span class="name">Celina Wiśniewska</span>
+                <span class="meta"><span class="agebadge">3-latki</span>
+                  <span class="progress"><span style="width:27%"></span></span></span>
+              </span>
+              <span class="count">6/22</span>
+            </button></li>
+            <li><button class="student-card" data-goto="assess">
+              <span class="dot">DM</span>
+              <span class="info">
+                <span class="name">Dawid Mazur</span>
+                <span class="meta"><span class="agebadge">5-latki</span>
+                  <span class="progress"><span style="width:0%"></span></span></span>
+              </span>
+              <span class="count">0/34</span>
+            </button></li>
+            <li><button class="student-card" data-goto="assess">
+              <span class="dot">EL</span>
+              <span class="info">
+                <span class="name">Ewa Lis</span>
+                <span class="meta"><span class="agebadge">4-latki</span>
+                  <span class="progress"><span style="width:57%"></span></span></span>
+              </span>
+              <span class="count">17/30</span>
+            </button></li>
+            <li><button class="student-card" data-goto="assess">
+              <span class="dot">FG</span>
+              <span class="info">
+                <span class="name">Franek Górski</span>
+                <span class="meta"><span class="agebadge">5-latki</span>
+                  <span class="progress"><span style="width:41%"></span></span></span>
+              </span>
+              <span class="count">14/34</span>
+            </button></li>
+          </ul>
+        </div>
+        <nav class="bottomnav" aria-label="Nawigacja">
+          <button class="active" data-goto="students"><span class="ico">👧</span>Uczniowie</button>
+          <button data-goto="reports"><span class="ico">📄</span>Raporty</button>
+          <button data-goto="skills"><span class="ico">⭐</span>Umiejętności</button>
+          <button><span class="ico">⚙️</span>Ustawienia</button>
+        </nav>
+      </section>
+
+      <!-- E3: ocena ucznia -->
+      <section class="screen" id="scr-assess">
+        <div class="appbar">
+          <button class="backbtn" data-goto="students" aria-label="Wróć">←</button>
+          <div>
+            <div class="title">Ania Kowalska</div>
+            <div class="sub">4-latki · Semestr I</div>
+          </div>
+          <span style="flex:1"></span>
+          <span class="savebadge" id="savebadge">24/30 · Zapisano ✓</span>
+        </div>
+        <div class="screen-body">
+
+          <div class="area open">
+            <button class="area-head"><span class="arrow">▸</span> Samodzielność <span class="score">5/6</span></button>
+            <div class="area-items">
+              <div class="skill">
+                <div class="row1">
+                  <span class="stitle">Samodzielnie ubiera kurtkę</span>
+                  <button class="iconbtn btn-info" aria-label="Opis umiejętności">ⓘ</button>
+                  <button class="iconbtn btn-note" aria-label="Notatka">✎</button>
+                </div>
+                <div class="desc"><strong>Jak sprawdzić:</strong> poproś dziecko o ubranie się przed wyjściem do ogrodu.<br>
+                  <strong>Zalecenie dla rodziców:</strong> ćwiczcie wspólnie zapinanie suwaka przy ubieraniu.</div>
+                <div class="togglerow">
+                  <button class="tg yes sel">✓ Potrafi</button>
+                  <button class="tg no">○ Jeszcze nie</button>
+                </div>
+                <textarea class="skillnote" aria-label="Notatka do umiejętności">myli strony butów</textarea>
+              </div>
+              <div class="skill">
+                <div class="row1">
+                  <span class="stitle">Korzysta samodzielnie z toalety</span>
+                  <button class="iconbtn btn-info" aria-label="Opis umiejętności">ⓘ</button>
+                  <button class="iconbtn btn-note" aria-label="Notatka">✎</button>
+                </div>
+                <div class="desc"><strong>Jak sprawdzić:</strong> obserwacja w ciągu dnia.<br>
+                  <strong>Zalecenie dla rodziców:</strong> utrwalajcie rutynę mycia rąk po toalecie.</div>
+                <div class="togglerow">
+                  <button class="tg yes sel">✓ Potrafi</button>
+                  <button class="tg no">○ Jeszcze nie</button>
+                </div>
+                <textarea class="skillnote" aria-label="Notatka do umiejętności" placeholder="Dodaj notatkę…"></textarea>
+              </div>
+              <div class="skill">
+                <div class="row1">
+                  <span class="stitle">Zapina guziki</span>
+                  <button class="iconbtn btn-info" aria-label="Opis umiejętności">ⓘ</button>
+                  <button class="iconbtn btn-note" aria-label="Notatka">✎</button>
+                </div>
+                <div class="desc"><strong>Jak sprawdzić:</strong> zabawa w przebieranie lalki / własny sweterek.<br>
+                  <strong>Zalecenie dla rodziców:</strong> ubrania z dużymi guzikami, wspólne ćwiczenie bez pośpiechu.</div>
+                <div class="togglerow">
+                  <button class="tg yes">✓ Potrafi</button>
+                  <button class="tg no sel">○ Jeszcze nie</button>
+                </div>
+                <textarea class="skillnote" aria-label="Notatka do umiejętności" placeholder="Dodaj notatkę…"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="area">
+            <button class="area-head"><span class="arrow">▸</span> Motoryka mała <span class="score">6/8</span></button>
+            <div class="area-items">
+              <div class="skill">
+                <div class="row1">
+                  <span class="stitle">Trzyma poprawnie kredkę</span>
+                  <button class="iconbtn btn-info" aria-label="Opis umiejętności">ⓘ</button>
+                  <button class="iconbtn btn-note" aria-label="Notatka">✎</button>
+                </div>
+                <div class="desc"><strong>Jak sprawdzić:</strong> obserwacja podczas rysowania.<br>
+                  <strong>Zalecenie dla rodziców:</strong> krótkie kredki/pastele wymuszają poprawny chwyt.</div>
+                <div class="togglerow">
+                  <button class="tg yes sel">✓ Potrafi</button>
+                  <button class="tg no">○ Jeszcze nie</button>
+                </div>
+                <textarea class="skillnote" aria-label="Notatka do umiejętności" placeholder="Dodaj notatkę…"></textarea>
+              </div>
+              <div class="skill">
+                <div class="row1">
+                  <span class="stitle">Wycina nożyczkami po linii</span>
+                  <button class="iconbtn btn-info" aria-label="Opis umiejętności">ⓘ</button>
+                  <button class="iconbtn btn-note" aria-label="Notatka">✎</button>
+                </div>
+                <div class="desc"><strong>Jak sprawdzić:</strong> zadanie plastyczne z wycinaniem prostej linii.<br>
+                  <strong>Zalecenie dla rodziców:</strong> bezpieczne nożyczki i wspólne wycinanki w domu.</div>
+                <div class="togglerow">
+                  <button class="tg yes">✓ Potrafi</button>
+                  <button class="tg no">○ Jeszcze nie</button>
+                </div>
+                <textarea class="skillnote" aria-label="Notatka do umiejętności" placeholder="Dodaj notatkę…"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="area">
+            <button class="area-head"><span class="arrow">▸</span> Mowa i komunikacja <span class="score">4/7</span></button>
+            <div class="area-items">
+              <div class="skill">
+                <div class="row1">
+                  <span class="stitle">Buduje zdania złożone</span>
+                  <button class="iconbtn btn-info" aria-label="Opis umiejętności">ⓘ</button>
+                  <button class="iconbtn btn-note" aria-label="Notatka">✎</button>
+                </div>
+                <div class="desc"><strong>Jak sprawdzić:</strong> rozmowa o obrazku, opowiadanie historyjki.<br>
+                  <strong>Zalecenie dla rodziców:</strong> codzienne czytanie i rozmowa o przeczytanej bajce.</div>
+                <div class="togglerow">
+                  <button class="tg yes">✓ Potrafi</button>
+                  <button class="tg no">○ Jeszcze nie</button>
+                </div>
+                <textarea class="skillnote" aria-label="Notatka do umiejętności" placeholder="Dodaj notatkę…"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="generalnote">
+            <label for="gnote" style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Notatka ogólna o dziecku</label>
+            <textarea id="gnote">Ania chętnie pomaga innym dzieciom, dobrze odnajduje się w pracy w grupie.</textarea>
+          </div>
+          <div class="assess-footer">
+            <button class="btn-ghost" data-goto="report">Podgląd raportu</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- E4: konfiguracja umiejętności -->
+      <section class="screen" id="scr-skills">
+        <div class="appbar">
+          <div class="title">Umiejętności</div>
+          <span style="flex:1"></span>
+          <button class="chip-select">+ Obszar</button>
+        </div>
+        <div class="screen-body">
+          <div class="area open">
+            <button class="area-head"><span class="arrow">▸</span> Samodzielność <span class="score">6</span></button>
+            <div class="area-items">
+              <div class="cfg-skill"><span class="drag">⠿</span><span class="t">Samodzielnie ubiera kurtkę</span>
+                <span class="ages"><span>3l</span><span>4l</span></span><button class="iconbtn" aria-label="Edytuj">✏️</button></div>
+              <div class="cfg-skill"><span class="drag">⠿</span><span class="t">Korzysta samodzielnie z toalety</span>
+                <span class="ages"><span>3l</span><span>4l</span><span>5l</span></span><button class="iconbtn" aria-label="Edytuj">✏️</button></div>
+              <div class="cfg-skill"><span class="drag">⠿</span><span class="t">Zapina guziki</span>
+                <span class="ages"><span>4l</span><span>5l</span></span><button class="iconbtn" aria-label="Edytuj">✏️</button></div>
+              <div class="addrow"><button>+ Dodaj umiejętność</button></div>
+            </div>
+          </div>
+          <div class="area">
+            <button class="area-head"><span class="arrow">▸</span> Motoryka mała <span class="score">8</span></button>
+            <div class="area-items"><div class="addrow"><button>+ Dodaj umiejętność</button></div></div>
+          </div>
+          <div class="area">
+            <button class="area-head"><span class="arrow">▸</span> Mowa i komunikacja <span class="score">7</span></button>
+            <div class="area-items"><div class="addrow"><button>+ Dodaj umiejętność</button></div></div>
+          </div>
+
+          <div class="editpanel">
+            <h3>Edycja umiejętności</h3>
+            <label for="ep-title">Tytuł</label>
+            <input id="ep-title" value="Samodzielnie ubiera kurtkę">
+            <label for="ep-desc">Opis (jak sprawdzić)</label>
+            <textarea id="ep-desc" rows="2">Poproś dziecko o samodzielne ubranie się przed wyjściem do ogrodu.</textarea>
+            <label for="ep-rec">Zalecenie dla rodziców</label>
+            <textarea id="ep-rec" rows="2">Ćwiczcie wspólnie zapinanie suwaka przy codziennym ubieraniu.</textarea>
+            <label>Grupy wiekowe</label>
+            <div class="agepick">
+              <button class="sel">3-latki</button>
+              <button class="sel">4-latki</button>
+              <button>5-latki</button>
+              <button>6-latki</button>
+            </div>
+            <label for="ep-area">Obszar</label>
+            <select id="ep-area">
+              <option>Samodzielność</option>
+              <option>Motoryka mała</option>
+              <option>Mowa i komunikacja</option>
+            </select>
+            <div class="editactions">
+              <button class="btn-primary">Zapisz</button>
+              <button class="btn-ghost">Anuluj</button>
+            </div>
+          </div>
+        </div>
+        <nav class="bottomnav" aria-label="Nawigacja">
+          <button data-goto="students"><span class="ico">👧</span>Uczniowie</button>
+          <button data-goto="reports"><span class="ico">📄</span>Raporty</button>
+          <button class="active" data-goto="skills"><span class="ico">⭐</span>Umiejętności</button>
+          <button><span class="ico">⚙️</span>Ustawienia</button>
+        </nav>
+      </section>
+
+      <!-- E5: raporty -->
+      <section class="screen" id="scr-reports">
+        <div class="appbar">
+          <div>
+            <div class="title">Raporty</div>
+            <div class="sub">Semestr I 2026/2027</div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="reportrow">
+            <span class="n">Ania Kowalska</span>
+            <span class="status-pill ready">gotowe 100%</span>
+            <button class="minibtn" data-goto="report">Generuj</button>
+          </div>
+          <div class="reportrow">
+            <span class="n">Bartek Nowak</span>
+            <span class="status-pill gen">wygenerowany</span>
+            <button class="minibtn" data-goto="report">Podgląd</button>
+            <button class="minibtn">🖨</button>
+          </div>
+          <div class="reportrow">
+            <span class="n">Celina Wiśniewska</span>
+            <span class="status-pill missing">⚠ braki 27%</span>
+            <button class="minibtn" data-goto="assess">Uzupełnij</button>
+          </div>
+          <div class="reportrow">
+            <span class="n">Dawid Mazur</span>
+            <span class="status-pill missing">⚠ braki 0%</span>
+            <button class="minibtn" data-goto="assess">Uzupełnij</button>
+          </div>
+          <div class="addrow"><button>Generuj wszystkie gotowe (2)</button></div>
+        </div>
+        <nav class="bottomnav" aria-label="Nawigacja">
+          <button data-goto="students"><span class="ico">👧</span>Uczniowie</button>
+          <button class="active" data-goto="reports"><span class="ico">📄</span>Raporty</button>
+          <button data-goto="skills"><span class="ico">⭐</span>Umiejętności</button>
+          <button><span class="ico">⚙️</span>Ustawienia</button>
+        </nav>
+      </section>
+
+      <!-- E6: podgląd raportu -->
+      <section class="screen" id="scr-report">
+        <div class="appbar">
+          <button class="backbtn" data-goto="reports" aria-label="Wróć">←</button>
+          <div class="title">Raport — podgląd</div>
+          <span style="flex:1"></span>
+          <button class="chip-select">🖨 Drukuj / PDF</button>
+        </div>
+        <div class="screen-body">
+          <div class="report-doc">
+            <h2>Raport rozwoju dziecka</h2>
+            <div class="rmeta">Ania Kowalska · 4-latki · Semestr I 2026/2027<br>Przedszkole „Biedronki"</div>
+
+            <h3 class="good">Co Ania już potrafi ✓</h3>
+            <p><strong>Samodzielność:</strong> samodzielnie ubiera kurtkę, korzysta z toalety, myje ręce.</p>
+            <p><strong>Motoryka mała:</strong> trzyma poprawnie kredkę, lepi proste kształty z plasteliny.</p>
+            <p><strong>Mowa i komunikacja:</strong> wypowiada się pełnymi zdaniami, zna wierszyki.</p>
+
+            <h3 class="work">Nad czym pracujemy</h3>
+            <ul>
+              <li>Zapinanie guzików
+                <div class="rec">Zalecenie: ubrania z dużymi guzikami, wspólne ćwiczenie bez pośpiechu.</div></li>
+              <li>Wycinanie nożyczkami po linii
+                <div class="rec">Zalecenie: bezpieczne nożyczki i wspólne wycinanki w domu.</div></li>
+            </ul>
+
+            <h3>Obserwacje nauczyciela</h3>
+            <p>Ania chętnie pomaga innym dzieciom, dobrze odnajduje się w pracy w grupie.
+               W drugim semestrze skupimy się na ćwiczeniach grafomotorycznych.</p>
+
+            <div class="sig"><span>Data: 15.01.2027</span><span>Nauczyciel: K. Mazurek</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="notes">
+      <div class="note-set active" data-for="login">
+        <h2>E1 · Logowanie</h2>
+        <ul>
+          <li><strong>Bez samodzielnej rejestracji</strong> — konta zakłada administrator; aplikacja przechowuje dane dzieci, dostęp jest zamknięty.</li>
+          <li>Sesja w bezpiecznym cookie (HttpOnly), limit prób logowania.</li>
+        </ul>
+      </div>
+      <div class="note-set" data-for="students">
+        <h2>E2 · Uczniowie — ekran główny</h2>
+        <ul>
+          <li><strong>Postęp wypełnienia</strong> przy każdym dziecku: ocenione / wszystkie umiejętności jego grupy wiekowej.</li>
+          <li><strong>Selektor semestru</strong> w nagłówku ustawia kontekst całej aplikacji.</li>
+          <li>Filtr „Do uzupełnienia" pokazuje tylko dzieci z brakami.</li>
+          <li>Badge grupy wiekowej — to od niej zależy lista umiejętności.</li>
+        </ul>
+      </div>
+      <div class="note-set" data-for="assess">
+        <h2>E3 · Ocena ucznia — serce aplikacji</h2>
+        <ul>
+          <li><strong>Jedno tapnięcie = ocena</strong>, zapis natychmiastowy (autosave, wskaźnik „Zapisano ✓"). Ponowne tapnięcie odznacza.</li>
+          <li>Zielony „Potrafi", bursztynowy „Jeszcze nie" — celowo bez czerwieni.</li>
+          <li><strong>ⓘ</strong> pokazuje opis (jak sprawdzić) i zalecenie dla rodziców; <strong>✎</strong> otwiera notatkę do umiejętności.</li>
+          <li>Umiejętności pogrupowane akordeonami obszarów rozwoju, liczniki na żywo.</li>
+          <li>Na dole notatka ogólna o dziecku (trafia do raportu).</li>
+        </ul>
+      </div>
+      <div class="note-set" data-for="skills">
+        <h2>E4 · Umiejętności — konfiguracja</h2>
+        <ul>
+          <li>Pełny CRUD: tytuł, opis, <strong>zalecenie dla rodziców</strong>, obszar, kolejność (drag&nbsp;&amp;&nbsp;drop).</li>
+          <li><strong>Chipy grup wiekowych</strong> — jedna umiejętność może dotyczyć kilku roczników.</li>
+          <li>Dezaktywacja zamiast usuwania — historia ocen zostaje spójna.</li>
+        </ul>
+      </div>
+      <div class="note-set" data-for="reports">
+        <h2>E5 · Raporty</h2>
+        <ul>
+          <li>Status per dziecko: gotowe / wygenerowany / braki — z akcją dopasowaną do stanu.</li>
+          <li>Przy brakach przycisk prowadzi wprost do ekranu oceniania.</li>
+          <li>Generowanie zbiorcze dla wszystkich dzieci z kompletem ocen.</li>
+        </ul>
+      </div>
+      <div class="note-set" data-for="report">
+        <h2>E6 · Raport dla rodziców</h2>
+        <ul>
+          <li>Sekcja <strong>„Co dziecko potrafi"</strong> (podsumowanie po obszarach) i <strong>„Nad czym pracujemy"</strong> z zaleceniami z konfiguracji umiejętności.</li>
+          <li>Ton wspierający — „jeszcze nie" zamiast „nie potrafi", zero czerwieni.</li>
+          <li>Wygenerowany raport to <strong>snapshot</strong> — późniejsze zmiany konfiguracji go nie zmieniają.</li>
+          <li>Druk / PDF przez widok print-friendly w przeglądarce.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tabs button');
+  function show(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'scr-' + name));
+    document.querySelectorAll('.note-set').forEach(n => n.classList.toggle('active', n.dataset.for === name));
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.screen === name));
+  }
+  tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.screen)));
+  document.querySelectorAll('[data-goto]').forEach(el =>
+    el.addEventListener('click', () => show(el.dataset.goto)));
+
+  document.querySelectorAll('.area-head').forEach(h =>
+    h.addEventListener('click', () => h.parentElement.classList.toggle('open')));
+
+  document.querySelectorAll('.btn-info').forEach(b =>
+    b.addEventListener('click', () => b.closest('.skill').classList.toggle('show-desc')));
+  document.querySelectorAll('.btn-note').forEach(b =>
+    b.addEventListener('click', () => b.closest('.skill').classList.toggle('show-note')));
+
+  document.querySelectorAll('.togglerow').forEach(row => {
+    row.querySelectorAll('.tg').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const was = btn.classList.contains('sel');
+        row.querySelectorAll('.tg').forEach(b => b.classList.remove('sel'));
+        if (!was) btn.classList.add('sel');
+        const badge = document.getElementById('savebadge');
+        if (badge) {
+          badge.textContent = 'Zapisywanie…';
+          setTimeout(() => { badge.textContent = '24/30 · Zapisano ✓'; }, 400);
+        }
+      });
+    });
+  });
+  document.querySelectorAll('.agepick button').forEach(b =>
+    b.addEventListener('click', () => b.classList.toggle('sel')));
+</script>
+
+</body>
+</html>
