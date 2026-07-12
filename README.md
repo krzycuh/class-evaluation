@@ -14,7 +14,23 @@ rodziców z zaleceniami.
 | [docs/ekrany.md](docs/ekrany.md) | projekt UX: mapa nawigacji, opis ekranów, zasady interakcji |
 | [docs/makiety.html](docs/makiety.html) | interaktywne makiety ekranów — otwórz w przeglądarce |
 
-## Uruchomienie (Docker)
+## Uruchomienie produkcyjne (Raspberry Pi, obrazy z GHCR)
+
+Obrazy multi-arch (amd64 + arm64) buduje GitHub Actions
+(`.github/workflows/deploy.yml`) przy każdym pushu na `main` i przy
+publikacji release'a, po czym wypycha je do GHCR.
+
+```bash
+cp .env.example .env    # ustaw DB_PASSWORD (i opcjonalnie hasło admina)
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Aktualizacja do nowszej wersji: `pull` + `up -d` ponownie. Konkretną wersję
+przypinasz przez `VERSION=1.0.0` w `.env` (domyślnie `main`).
+Przy prywatnym repo najpierw `docker login ghcr.io` z PAT-em `read:packages`.
+
+## Uruchomienie z lokalnym buildem (Docker)
 
 ```bash
 cp .env.example .env    # ustaw DB_PASSWORD (i opcjonalnie hasło admina)

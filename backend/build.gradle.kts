@@ -46,3 +46,8 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+// tylko boot-jar — Dockerfile.prebuilt kopiuje build/libs/*.jar
+tasks.jar {
+    enabled = false
+}
