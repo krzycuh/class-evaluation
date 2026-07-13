@@ -3,6 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../api/client'
 import { useApp } from '../../AppContext'
 import type { AgeGroup, PeriodStatus, StudentWithProgress } from '../../types'
+import { ChangePasswordForm } from './ChangePasswordForm'
+import { GroupsSection } from './GroupsSection'
+import { TeachersSection } from './TeachersSection'
 
 export function SettingsPage() {
   const { user, classGroup, period, periods } = useApp()
@@ -151,12 +154,16 @@ export function SettingsPage() {
         {!isAdmin && <p className="hint">Semestry otwiera i zamyka administrator.</p>}
       </section>
 
+      {isAdmin && <TeachersSection currentUserId={user.id} />}
+      {isAdmin && <GroupsSection />}
+
       <section className="settings-section">
         <h2>Konto</h2>
         <p>
           Zalogowano jako <strong>{user.displayName}</strong> ({user.email}) — rola{' '}
           {user.role === 'ADMIN' ? 'administrator' : 'nauczyciel'}.
         </p>
+        <ChangePasswordForm />
       </section>
     </div>
   )

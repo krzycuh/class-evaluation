@@ -34,14 +34,14 @@ class StudentService(
     fun listClassGroups(): List<ClassGroup> {
         val user = currentUser.get()
         return if (user.role == Role.ADMIN) classGroups.findAllOrdered()
-        else classGroups.findByOwnerUserId(user.id!!)
+        else classGroups.findByTeacher(user.id!!)
     }
 
     fun requireClassGroupAccess(classGroupId: UUID): ClassGroup {
         val group = classGroups.findById(classGroupId)
             .orElseThrow { NotFoundException("Nie znaleziono grupy") }
         val user = currentUser.get()
-        if (user.role != Role.ADMIN && group.ownerUserId != user.id) {
+        if (user.role != Role.ADMIN && !classGroups.isAssigned(classGroupId, user.id!!)) {
             throw AccessDeniedException("Brak dostępu do grupy")
         }
         return group

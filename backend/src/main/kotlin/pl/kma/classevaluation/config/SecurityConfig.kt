@@ -58,6 +58,13 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/development-areas/**", "/api/skills/**", "/api/periods/**", "/api/event-categories/**").hasRole("ADMIN")
                 it.requestMatchers(HttpMethod.PATCH, "/api/development-areas/**", "/api/skills/**", "/api/periods/**", "/api/event-categories/**").hasRole("ADMIN")
+                // zarządzanie kontami i grupami — tylko admin; POST /api/class-groups/{id}/students zostaje dla nauczycielek
+                it.requestMatchers("/api/users/**").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.POST, "/api/class-groups").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.PATCH, "/api/class-groups/*").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.PUT, "/api/class-groups/*/teachers").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.POST, "/api/class-groups/*/rollover").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.GET, "/api/class-groups/assignments").hasRole("ADMIN")
                 it.requestMatchers("/api/**").authenticated()
                 it.anyRequest().denyAll()
             }

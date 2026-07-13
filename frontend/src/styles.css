@@ -111,6 +111,21 @@ textarea:focus-visible {
   color: var(--ink);
 }
 
+.group-select {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  padding: 0;
+  max-width: 180px;
+}
+
+.group-select option {
+  color: var(--ink);
+  font-weight: 400;
+}
+
 .avatar {
   width: 34px;
   height: 34px;
@@ -1081,6 +1096,50 @@ textarea:focus-visible {
   font: inherit;
   font-size: 0.85rem;
   padding: 8px 12px;
+}
+
+.settings-row .n .sub {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.password-reveal {
+  background: var(--warn-soft);
+  border: 1px solid var(--warn);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  margin: 8px 0;
+}
+
+.password-reveal code {
+  font-weight: 700;
+  user-select: all;
+}
+
+.group-teachers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0 12px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+
+.group-teachers label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-teachers label.inactive {
+  color: var(--muted);
+}
+
+.group-rollover {
+  padding: 8px 0 12px 12px;
+  border-bottom: 1px solid var(--line);
 }
 
 /* ---------- kalendarz ---------- */

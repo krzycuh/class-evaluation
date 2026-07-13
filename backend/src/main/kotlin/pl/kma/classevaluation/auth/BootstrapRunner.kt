@@ -13,7 +13,6 @@ import pl.kma.classevaluation.assessments.AssessmentPeriodRepository
 import pl.kma.classevaluation.assessments.PeriodStatus
 import pl.kma.classevaluation.students.ClassGroup
 import pl.kma.classevaluation.students.ClassGroupRepository
-import java.security.SecureRandom
 import java.time.LocalDate
 
 @ConfigurationProperties(prefix = "app")
@@ -50,7 +49,7 @@ class BootstrapRunner(
     override fun run(args: ApplicationArguments) {
         if (users.count() > 0) return
 
-        val password = props.admin.password.ifBlank { generatePassword() }
+        val password = props.admin.password.ifBlank { Passwords.generate() }
         if (props.admin.password.isBlank()) {
             log.warn("Nie ustawiono APP_ADMIN_PASSWORD — wygenerowano hasło administratora: {}", password)
             log.warn("Zaloguj się jako {} i zapisz to hasło. Ustaw APP_ADMIN_PASSWORD, aby użyć własnego.", props.admin.email)
@@ -69,13 +68,13 @@ class BootstrapRunner(
         val startYear = if (today.monthValue >= 9) today.year else today.year - 1
         val schoolYear = "$startYear/${startYear + 1}"
 
-        classGroups.save(
+        val group = classGroups.save(
             ClassGroup(
                 name = props.bootstrap.classGroupName,
                 schoolYear = schoolYear,
-                ownerUserId = admin.id!!,
             ),
         )
+        classGroups.assignTeacher(group.id!!, admin.id!!)
 
         periods.save(
             AssessmentPeriod(
@@ -97,11 +96,5 @@ class BootstrapRunner(
         )
 
         log.info("Utworzono konto administratora {}, grupę '{}' i semestry roku {}", admin.email, props.bootstrap.classGroupName, schoolYear)
-    }
-
-    private fun generatePassword(): String {
-        val chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-        val random = SecureRandom()
-        return (1..14).map { chars[random.nextInt(chars.length)] }.joinToString("")
     }
 }

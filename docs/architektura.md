@@ -101,10 +101,14 @@ erDiagram
 
 **users** — nauczycielki / admin
 - `id UUID PK`, `email UNIQUE`, `password_hash` (bcrypt/argon2), `display_name`,
-  `role` (`TEACHER` | `ADMIN`), `created_at`
+  `role` (`TEACHER` | `ADMIN`), `active BOOL`, `created_at`
 
 **class_groups** — grupa przedszkolna w roku szkolnym
-- `id UUID PK`, `name`, `school_year` (np. `2026/2027`), `owner_user_id FK→users`
+- `id UUID PK`, `name`, `school_year` (np. `2026/2027`)
+
+**class_group_teachers** — przypisania nauczycielek do grup (wiele-do-wielu)
+- `class_group_id FK→class_groups`, `user_id FK→users`, PK złożony
+- szczegóły: [nauczycielki.md](nauczycielki.md)
 
 **age_groups** — słownik grup wiekowych
 - `id UUID PK`, `name` („3-latki"…), `min_age_years`, `sort_order`
@@ -221,10 +225,10 @@ Dane dzieci = dane wrażliwe organizacyjnie — projekt zakłada:
 - **Uwierzytelnianie**: sesja w HttpOnly + Secure + SameSite=Lax cookie,
   hasła bcrypt (Spring DelegatingPasswordEncoder — łatwa migracja na
   Argon2id); brak JWT w localStorage (XSS-odporność).
-- **Autoryzacja**: nauczycielka widzi wyłącznie swoje grupy
-  (`class_groups.owner_user_id`); rola `ADMIN` zarządza konfiguracją
-  umiejętności i okresami. Kontrola dostępu egzekwowana w serwisach
-  (nie tylko w UI).
+- **Autoryzacja**: nauczycielka widzi wyłącznie grupy, do których jest
+  przypisana (`class_group_teachers`); rola `ADMIN` zarządza kontami,
+  grupami, konfiguracją umiejętności i okresami. Kontrola dostępu
+  egzekwowana w serwisach (nie tylko w UI).
 - **CSRF**: token dla żądań mutujących (Spring Security domyślnie).
 - **Minimalizacja danych**: tylko imię, nazwisko, data urodzenia.
 - **Rate limiting** na `/api/auth/login` + audyt (`updated_by`, `updated_at`
