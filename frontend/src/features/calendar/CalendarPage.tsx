@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api } from '../../api/client'
@@ -82,25 +82,70 @@ export function CalendarPage() {
     setSelectedDay(iso(next))
   }
 
-  // Gest przesunięcia (swipe) w poziomie zmienia miesiąc. Próg 60 px i wymóg
-  // wyraźnej przewagi ruchu poziomego nad pionowym nie kolidują z przewijaniem.
-  const touchStart = useRef<{ x: number; y: number } | null>(null)
+  // Gest przesunięcia (swipe) w poziomie zmienia miesiąc. Siatka podąża za
+  // palcem; po przekroczeniu progu 60 px wyjeżdża z ekranu, a nowy miesiąc
+  // wsuwa się z przeciwnej strony. Kierunek gestu ustalamy raz, po pierwszych
+  // kilkunastu pikselach ruchu — pionowy gest zostawiamy przewijaniu strony.
+  const gridRef = useRef<HTMLDivElement | null>(null)
+  const gesture = useRef<{ x: number; y: number; dx: number; horizontal: boolean | null } | null>(null)
+  const animating = useRef(false)
+  const animTimer = useRef<number | undefined>(undefined)
+
+  useEffect(() => () => window.clearTimeout(animTimer.current), [])
+
+  function styleGrid(transform: string, transition: string) {
+    const el = gridRef.current
+    if (!el) return
+    el.style.transition = transition
+    el.style.transform = transform
+  }
 
   function onTouchStart(e: React.TouchEvent) {
-    touchStart.current = e.touches.length === 1
-      ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    gesture.current = !animating.current && e.touches.length === 1
+      ? { x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, horizontal: null }
       : null
   }
 
-  function onTouchEnd(e: React.TouchEvent) {
-    const start = touchStart.current
-    touchStart.current = null
-    if (!start) return
-    const dx = e.changedTouches[0].clientX - start.x
-    const dy = e.changedTouches[0].clientY - start.y
-    if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) {
-      shiftMonth(dx < 0 ? 1 : -1)
+  function onTouchMove(e: React.TouchEvent) {
+    const g = gesture.current
+    if (!g) return
+    const dx = e.touches[0].clientX - g.x
+    const dy = e.touches[0].clientY - g.y
+    if (g.horizontal === null && (Math.abs(dx) > 12 || Math.abs(dy) > 12)) {
+      g.horizontal = Math.abs(dx) > Math.abs(dy)
     }
+    if (!g.horizontal) return
+    g.dx = dx
+    styleGrid(`translateX(${dx}px)`, 'none')
+  }
+
+  function onTouchEnd() {
+    const g = gesture.current
+    gesture.current = null
+    if (!g?.horizontal) return
+    const width = gridRef.current?.offsetWidth ?? 320
+    if (Math.abs(g.dx) <= 60) {
+      styleGrid('translateX(0)', 'transform 0.15s ease-out')
+      return
+    }
+    const delta = g.dx < 0 ? 1 : -1
+    animating.current = true
+    styleGrid(`translateX(${-delta * width}px)`, 'transform 0.16s ease-in')
+    animTimer.current = window.setTimeout(() => {
+      shiftMonth(delta)
+      styleGrid(`translateX(${delta * width}px)`, 'none')
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          styleGrid('translateX(0)', 'transform 0.2s ease-out')
+          animating.current = false
+        }),
+      )
+    }, 160)
+  }
+
+  function onTouchCancel() {
+    if (gesture.current?.horizontal) styleGrid('translateX(0)', 'transform 0.15s ease-out')
+    gesture.current = null
   }
 
   function toggleFilter(key: FilterKey) {
@@ -147,33 +192,35 @@ export function CalendarPage() {
       </div>
 
       <div
-        className="cal-grid"
-        role="grid"
-        aria-label="Kalendarz miesiąca"
+        className="cal-swipe"
         onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchCancel}
       >
-        {WEEKDAYS.map((d) => (
-          <span key={d} className="cal-wd">{d}</span>
-        ))}
-        {cells.map((day, i) =>
-          day === null ? (
-            <span key={`x${i}`} className="cal-cell empty" />
-          ) : (
-            <button
-              key={day}
-              className={`cal-cell${day === selectedDay ? ' sel' : ''}${day === iso(today) ? ' today' : ''}`}
-              onClick={() => setSelectedDay(day)}
-            >
-              <span className="num">{Number(day.slice(8))}</span>
-              <span className="dots">
-                {(byDay.get(day) ?? []).slice(0, 3).map((it, j) => (
-                  <span key={j} style={{ background: itemColor(it) }} />
-                ))}
-              </span>
-            </button>
-          ),
-        )}
+        <div className="cal-grid" ref={gridRef} role="grid" aria-label="Kalendarz miesiąca">
+          {WEEKDAYS.map((d) => (
+            <span key={d} className="cal-wd">{d}</span>
+          ))}
+          {cells.map((day, i) =>
+            day === null ? (
+              <span key={`x${i}`} className="cal-cell empty" />
+            ) : (
+              <button
+                key={day}
+                className={`cal-cell${day === selectedDay ? ' sel' : ''}${day === iso(today) ? ' today' : ''}`}
+                onClick={() => setSelectedDay(day)}
+              >
+                <span className="num">{Number(day.slice(8))}</span>
+                <span className="dots">
+                  {(byDay.get(day) ?? []).slice(0, 3).map((it, j) => (
+                    <span key={j} style={{ background: itemColor(it) }} />
+                  ))}
+                </span>
+              </button>
+            ),
+          )}
+        </div>
       </div>
 
       {feedQuery.isLoading && <div className="page-loading">Wczytywanie…</div>}
