@@ -5,13 +5,18 @@ export interface UserDto {
   email: string
   displayName: string
   role: Role
+  active: boolean
+}
+
+export interface CreatedTeacher {
+  user: UserDto
+  initialPassword: string
 }
 
 export interface ClassGroup {
   id: string
   name: string
   schoolYear: string
-  ownerUserId: string
 }
 
 export interface AgeGroup {

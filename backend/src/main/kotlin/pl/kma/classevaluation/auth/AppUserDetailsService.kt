@@ -15,11 +15,12 @@ class AppUserDetailsService(private val users: UserRepository) : UserDetailsServ
     override fun loadUserByUsername(username: String): UserDetails {
         val user = users.findByEmail(username)
             ?: throw UsernameNotFoundException("Nieznany użytkownik")
-        return SpringUser(
-            user.email,
-            user.passwordHash,
-            listOf(SimpleGrantedAuthority("ROLE_${user.role}")),
-        )
+        return SpringUser.builder()
+            .username(user.email)
+            .password(user.passwordHash)
+            .disabled(!user.active)
+            .authorities(SimpleGrantedAuthority("ROLE_${user.role}"))
+            .build()
     }
 }
 
@@ -30,7 +31,8 @@ class CurrentUser(private val users: UserRepository) {
     fun get(): User {
         val auth = SecurityContextHolder.getContext().authentication
             ?: throw UsernameNotFoundException("Brak uwierzytelnienia")
-        return users.findByEmail(auth.name)
+        // konto zdezaktywowane w trakcie życia sesji też traci dostęp
+        return users.findByEmail(auth.name)?.takeIf { it.active }
             ?: throw UsernameNotFoundException("Nieznany użytkownik")
     }
 

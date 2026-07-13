@@ -4,7 +4,7 @@ import { api } from '../api/client'
 import { useApp } from '../AppContext'
 
 export function Layout() {
-  const { user, classGroup, period, periods, setPeriodId } = useApp()
+  const { user, classGroup, classGroups, period, periods, setPeriodId, setClassGroupId } = useApp()
   const [menuOpen, setMenuOpen] = useState(false)
 
   async function logout() {
@@ -28,7 +28,22 @@ export function Layout() {
     <div className="shell">
       <header className="appbar">
         <div className="appbar-title">
-          <strong>{classGroup.name}</strong>
+          {classGroups.length > 1 ? (
+            <select
+              className="group-select"
+              value={classGroup.id}
+              onChange={(e) => setClassGroupId(e.target.value)}
+              aria-label="Wybierz grupę"
+            >
+              {classGroups.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <strong>{classGroup.name}</strong>
+          )}
           <span>rok {classGroup.schoolYear}</span>
         </div>
         <select

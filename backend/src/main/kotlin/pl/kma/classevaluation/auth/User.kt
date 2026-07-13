@@ -16,10 +16,14 @@ data class User(
     val passwordHash: String,
     val displayName: String,
     val role: Role,
+    val active: Boolean = true,
     val createdAt: Instant = Instant.now(),
 )
 
 interface UserRepository : CrudRepository<User, UUID> {
     @Query("SELECT * FROM users WHERE lower(email) = lower(:email)")
     fun findByEmail(email: String): User?
+
+    @Query("SELECT * FROM users ORDER BY display_name, email")
+    fun findAllOrdered(): List<User>
 }

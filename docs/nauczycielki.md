@@ -1,10 +1,14 @@
-# Propozycja: konta nauczycielek i dostęp do grup
+# Konta nauczycielek i dostęp do grup
 
 Plan dodania obsługi wielu nauczycielek (przedszkolanek) do aplikacji.
 Dokument odpowiada też na dwa pytania projektowe: *czy nauczycielki widzą
 nawzajem swoje grupy* i *jak zorganizować dostęp*.
 
-## 1. Stan obecny
+> **Status:** etapy 1 i 2 zaimplementowane (migracja `V4__teachers.sql`,
+> `/api/users`, `/api/auth/password`, zarządzanie grupami i przypisaniami,
+> sekcje w Ustawieniach). Etap 3 pozostaje na później.
+
+## 1. Stan wyjściowy (przed implementacją)
 
 Fundament wielu użytkowników już istnieje i działa poprawnie:
 
