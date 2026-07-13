@@ -17,6 +17,7 @@ data class User(
     val displayName: String,
     val role: Role,
     val active: Boolean = true,
+    val mustChangePassword: Boolean = false,
     val createdAt: Instant = Instant.now(),
 )
 

@@ -6,6 +6,12 @@ export interface UserDto {
   displayName: string
   role: Role
   active: boolean
+  mustChangePassword: boolean
+}
+
+export interface TeacherAssignment {
+  classGroupId: string
+  userId: string
 }
 
 export interface CreatedTeacher {

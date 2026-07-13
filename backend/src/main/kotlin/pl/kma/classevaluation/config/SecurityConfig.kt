@@ -63,6 +63,8 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.POST, "/api/class-groups").hasRole("ADMIN")
                 it.requestMatchers(HttpMethod.PATCH, "/api/class-groups/*").hasRole("ADMIN")
                 it.requestMatchers(HttpMethod.PUT, "/api/class-groups/*/teachers").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.POST, "/api/class-groups/*/rollover").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.GET, "/api/class-groups/assignments").hasRole("ADMIN")
                 it.requestMatchers("/api/**").authenticated()
                 it.anyRequest().denyAll()
             }

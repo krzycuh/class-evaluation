@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../api/client'
 
 /** Zmiana własnego hasła — dostępna dla każdej zalogowanej osoby. */
 export function ChangePasswordForm() {
+  const queryClient = useQueryClient()
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
@@ -18,6 +19,8 @@ export function ChangePasswordForm() {
       setRepeatPassword('')
       setError(undefined)
       setSaved(true)
+      // czyści flagę mustChangePassword w /api/auth/me
+      queryClient.invalidateQueries({ queryKey: ['me'] })
     },
     onError: (e) => {
       setSaved(false)

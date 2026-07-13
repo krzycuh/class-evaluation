@@ -92,6 +92,7 @@ class TeacherManagementFlowTest {
         teacherAPassword = created["initialPassword"].asText()
         assertThat(created["user"]["email"].asText()).isEqualTo("ania.teacher@example.com")
         assertThat(created["user"]["role"].asText()).isEqualTo("TEACHER")
+        assertThat(created["user"]["mustChangePassword"].asBoolean()).isTrue()
         assertThat(teacherAPassword).hasSizeGreaterThanOrEqualTo(12)
 
         val createdB = postJson("/api/users", """{"email":"basia.teacher@example.com","displayName":"Basia Kowal"}""")
@@ -208,20 +209,24 @@ class TeacherManagementFlowTest {
         )
             .andExpect(status().isNoContent)
 
+        // zmiana własnego hasła czyści flagę wymuszonej zmiany
         mockMvc.perform(
             post("/api/auth/login").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"email":"ania.teacher@example.com","password":"nowe-haslo-123"}"""),
         )
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.mustChangePassword").value(false))
     }
 
     @Test
     @Order(8)
     fun `deactivated account cannot login or use existing session`() {
-        // admin resetuje hasło Basi, potem ją dezaktywuje
+        // admin resetuje hasło Basi (reset wymusza zmianę przy logowaniu), potem ją dezaktywuje
         val reset = postJson("/api/users/$teacherBId/password-reset", "")
         val basiaPassword = reset["newPassword"].asText()
+        val basia = getJson("/api/users").first { it["id"].asText() == teacherBId }
+        assertThat(basia["mustChangePassword"].asBoolean()).isTrue()
 
         mockMvc.perform(
             patch("/api/users/$teacherBId").with(admin).with(csrf())
@@ -251,6 +256,57 @@ class TeacherManagementFlowTest {
             patch("/api/users/$adminId").with(admin).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"active":false}"""),
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @Order(10)
+    fun `assignments overview is admin-only`() {
+        val assignments = getJson("/api/class-groups/assignments")
+        assertThat(assignments.any { it["classGroupId"].asText() == groupAId && it["userId"].asText() == teacherAId }).isTrue()
+
+        mockMvc.perform(get("/api/class-groups/assignments").with(teacherA))
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    @Order(11)
+    fun `rollover moves group to next school year`() {
+        // grupa A: nauczycielki A+B (test 5), uczeń Janek; rok 2026/2027 → 2027/2028
+        val newGroup = postJson("/api/class-groups/$groupAId/rollover", """{"schoolYear":"2027/2028"}""")
+        val newGroupId = newGroup["id"].asText()
+        assertThat(newGroup["name"].asText()).isEqualTo("Motylki")
+        assertThat(newGroup["schoolYear"].asText()).isEqualTo("2027/2028")
+
+        // przypisania skopiowane
+        val teachers = getJson("/api/class-groups/$newGroupId/teachers")
+        assertThat(teachers.map { it.asText() }).containsExactlyInAnyOrder(teacherAId, teacherBId)
+
+        // semestry nowego roku dołożone
+        val periods = getJson("/api/periods")
+        assertThat(periods.count { it["schoolYear"].asText() == "2027/2028" }).isEqualTo(2)
+        val newPeriodId = periods.first { it["schoolYear"].asText() == "2027/2028" }["id"].asText()
+
+        // dzieci przeniesione: nowa grupa ma Janka, stara jest pusta
+        // (periodId służy tylko do liczenia postępu — lista uczniów filtrowana po grupie)
+        val moved = getJson("/api/class-groups/$newGroupId/students?periodId=$newPeriodId")
+        assertThat(moved.map { it["lastName"].asText() }).containsExactly("Wspólny")
+        assertThat(getJson("/api/class-groups/$groupAId/students?periodId=$newPeriodId").size()).isZero()
+
+        // ponowny rollover tej samej grupy → konflikt (grupa już istnieje)
+        mockMvc.perform(
+            post("/api/class-groups/$groupAId/rollover").with(admin).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"schoolYear":"2027/2028"}"""),
+        )
+            .andExpect(status().isConflict)
+
+        // rok wcześniejszy niż obecny → błąd walidacji
+        mockMvc.perform(
+            post("/api/class-groups/$newGroupId/rollover").with(admin).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"schoolYear":"2026/2027"}"""),
         )
             .andExpect(status().isBadRequest)
     }

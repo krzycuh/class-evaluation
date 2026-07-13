@@ -61,6 +61,7 @@ class UserAdminController(
                 passwordHash = passwordEncoder.encode(password),
                 displayName = body.displayName.trim(),
                 role = Role.TEACHER,
+                mustChangePassword = true,
             ),
         )
         return CreatedTeacherResponse(user.toDto(), password)
@@ -86,7 +87,7 @@ class UserAdminController(
     fun resetPassword(@PathVariable id: UUID): PasswordResetResponse {
         val user = users.findById(id).orElseThrow { NotFoundException("Nie znaleziono użytkownika") }
         val password = Passwords.generate()
-        users.save(user.copy(passwordHash = passwordEncoder.encode(password)))
+        users.save(user.copy(passwordHash = passwordEncoder.encode(password), mustChangePassword = true))
         return PasswordResetResponse(password)
     }
 }

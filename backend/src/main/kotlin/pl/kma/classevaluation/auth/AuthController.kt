@@ -33,9 +33,16 @@ data class ChangePasswordRequest(
     @field:NotBlank @field:Size(min = 8, message = "hasło musi mieć co najmniej 8 znaków") val newPassword: String,
 )
 
-data class UserDto(val id: UUID, val email: String, val displayName: String, val role: Role, val active: Boolean)
+data class UserDto(
+    val id: UUID,
+    val email: String,
+    val displayName: String,
+    val role: Role,
+    val active: Boolean,
+    val mustChangePassword: Boolean,
+)
 
-internal fun User.toDto() = UserDto(id!!, email, displayName, role, active)
+internal fun User.toDto() = UserDto(id!!, email, displayName, role, active, mustChangePassword)
 
 @RestController
 @RequestMapping("/api/auth")
@@ -91,6 +98,6 @@ class AuthController(
         if (!passwordEncoder.matches(body.currentPassword, user.passwordHash)) {
             throw BadRequestException("Obecne hasło jest nieprawidłowe")
         }
-        users.save(user.copy(passwordHash = passwordEncoder.encode(body.newPassword)))
+        users.save(user.copy(passwordHash = passwordEncoder.encode(body.newPassword), mustChangePassword = false))
     }
 }

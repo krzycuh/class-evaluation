@@ -4,6 +4,7 @@ import { api, ApiError } from './api/client'
 import { AppProvider } from './AppContext'
 import { Layout } from './layout/Layout'
 import { LoginPage } from './features/auth/LoginPage'
+import { ForcePasswordChangePage } from './features/auth/ForcePasswordChangePage'
 import { StudentsPage } from './features/students/StudentsPage'
 import { AssessmentPage } from './features/assessment/AssessmentPage'
 import { CalendarPage } from './features/calendar/CalendarPage'
@@ -26,6 +27,8 @@ export default function App() {
   if (meQuery.isLoading) return <div className="page-loading">Wczytywanie…</div>
 
   if (!meQuery.data) return <LoginPage />
+
+  if (meQuery.data.mustChangePassword) return <ForcePasswordChangePage user={meQuery.data} />
 
   return (
     <AppProvider user={meQuery.data}>

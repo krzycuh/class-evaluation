@@ -24,4 +24,7 @@ data class AssessmentPeriod(
 interface AssessmentPeriodRepository : CrudRepository<AssessmentPeriod, UUID> {
     @Query("SELECT * FROM assessment_periods ORDER BY starts_on DESC")
     fun findAllOrdered(): List<AssessmentPeriod>
+
+    @Query("SELECT count(*) > 0 FROM assessment_periods WHERE school_year = :schoolYear")
+    fun existsBySchoolYear(schoolYear: String): Boolean
 }

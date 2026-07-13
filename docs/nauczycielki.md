@@ -4,9 +4,12 @@ Plan dodania obsługi wielu nauczycielek (przedszkolanek) do aplikacji.
 Dokument odpowiada też na dwa pytania projektowe: *czy nauczycielki widzą
 nawzajem swoje grupy* i *jak zorganizować dostęp*.
 
-> **Status:** etapy 1 i 2 zaimplementowane (migracja `V4__teachers.sql`,
-> `/api/users`, `/api/auth/password`, zarządzanie grupami i przypisaniami,
-> sekcje w Ustawieniach). Etap 3 pozostaje na później.
+> **Status:** wszystkie trzy etapy zaimplementowane (migracje
+> `V4__teachers.sql` i `V5__must_change_password.sql`; `/api/users`,
+> `/api/auth/password`, zarządzanie grupami i przypisaniami, wymuszenie
+> zmiany hasła startowego, rollover grupy na nowy rok szkolny
+> `POST /api/class-groups/{id}/rollover`, zestawienie przypisań
+> `GET /api/class-groups/assignments`, sekcje w Ustawieniach).
 
 ## 1. Stan wyjściowy (przed implementacją)
 
@@ -114,11 +117,19 @@ Frontend:
 - Ustawienia → sekcja **„Grupy"** (tylko admin): tworzenie grupy,
   checkboxy przypisanych nauczycielek.
 
-### Etap 3 — później / opcjonalnie
+### Etap 3 — hasła startowe i nowy rok szkolny
 
-- wymuszenie zmiany hasła przy pierwszym logowaniu (`must_change_password`),
-- „nowy rok szkolny": kopiowanie/archiwizacja grup i przekazywanie dzieci,
-- widok admina „kto ma dostęp do czego" (proste zestawienie przypisań).
+- `users.must_change_password` (migracja `V5`): ustawiane przy założeniu
+  konta i resecie hasła przez admina, czyszczone przy zmianie własnego
+  hasła; frontend blokuje aplikację ekranem „Ustaw własne hasło",
+  dopóki flaga jest aktywna,
+- „nowy rok szkolny": `POST /api/class-groups/{id}/rollover {schoolYear}`
+  tworzy grupę w nowym roku z tymi samymi przypisaniami, przenosi
+  aktywne dzieci (z przeliczeniem grupy wiekowej na 1 września nowego
+  roku) i dokłada semestry nowego roku, jeśli ich brak; historia ocen
+  zostaje nienaruszona, bo oceny są per semestr, nie per grupa,
+- zestawienie przypisań: `GET /api/class-groups/assignments` (admin) —
+  w Ustawieniach nazwiska nauczycielek widoczne przy każdej grupie.
 
 ## 5. Przypadki brzegowe
 

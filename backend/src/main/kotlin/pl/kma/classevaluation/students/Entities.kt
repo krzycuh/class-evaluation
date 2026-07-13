@@ -65,7 +65,10 @@ interface ClassGroupRepository : CrudRepository<ClassGroup, UUID> {
     fun clearTeachers(classGroupId: UUID)
 }
 
-interface StudentRepository : CrudRepository<Student, UUID>
+interface StudentRepository : CrudRepository<Student, UUID> {
+    @Query("SELECT * FROM students WHERE class_group_id = :classGroupId AND active")
+    fun findActiveByClassGroupId(classGroupId: UUID): List<Student>
+}
 
 interface AgeGroupRepository : CrudRepository<AgeGroup, UUID> {
     @Query("SELECT * FROM age_groups ORDER BY sort_order")

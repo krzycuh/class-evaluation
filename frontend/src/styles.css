@@ -1137,6 +1137,11 @@ textarea:focus-visible {
   color: var(--muted);
 }
 
+.group-rollover {
+  padding: 8px 0 12px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
 /* ---------- kalendarz ---------- */
 .cal-toolbar {
   display: flex;
