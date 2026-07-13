@@ -126,6 +126,86 @@ export interface ReportContent {
   missingCount: number
 }
 
+export type EventScope = 'NATIONAL' | 'PRESCHOOL' | 'CLASS_GROUP' | 'STUDENT'
+
+export interface EventCategory {
+  id: string
+  name: string
+  color: string
+  sortOrder: number
+  active: boolean
+}
+
+export type ProjectKind = 'TRIP' | 'CONTEST' | 'OTHER'
+export type ProjectScope = 'PRESCHOOL' | 'CLASS_GROUP'
+export type ProjectStatus = 'PLANNED' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED'
+
+/** Pozycja wspólnego feedu kalendarza (wydarzenie / projekt / zadanie projektu). */
+export interface CalendarItem {
+  type: 'EVENT' | 'PROJECT' | 'PROJECT_TASK'
+  id: string
+  title: string
+  startsOn: string
+  endsOn: string
+  scope?: EventScope
+  categoryName?: string
+  categoryColor?: string
+  studentName?: string
+  yearlyRecurring?: boolean
+  kind?: ProjectKind
+  status?: ProjectStatus
+  doneTasks?: number
+  totalTasks?: number
+  projectId?: string
+  done?: boolean
+}
+
+export interface EventTask {
+  id: string
+  title: string
+  done: boolean
+  sortOrder: number
+}
+
+export interface CalendarEventDetails {
+  id: string
+  title: string
+  description?: string
+  categoryId: string
+  scope: EventScope
+  classGroupId?: string
+  studentId?: string
+  startsOn: string
+  endsOn: string
+  yearlyRecurring: boolean
+  canEdit: boolean
+  tasks: EventTask[]
+}
+
+export interface ProjectTask {
+  id: string
+  title: string
+  dueOn?: string
+  done: boolean
+  sortOrder: number
+}
+
+export interface Project {
+  id: string
+  title: string
+  description?: string
+  kind: ProjectKind
+  scope: ProjectScope
+  classGroupId?: string
+  startsOn: string
+  endsOn: string
+  status: ProjectStatus
+  doneTasks: number
+  totalTasks: number
+  canEdit: boolean
+  tasks?: ProjectTask[]
+}
+
 export interface ReportDto {
   id: string
   studentId: string

@@ -56,8 +56,8 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/login").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/api/health").permitAll()
-                it.requestMatchers(HttpMethod.POST, "/api/development-areas/**", "/api/skills/**", "/api/periods/**").hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.PATCH, "/api/development-areas/**", "/api/skills/**", "/api/periods/**").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.POST, "/api/development-areas/**", "/api/skills/**", "/api/periods/**", "/api/event-categories/**").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.PATCH, "/api/development-areas/**", "/api/skills/**", "/api/periods/**", "/api/event-categories/**").hasRole("ADMIN")
                 it.requestMatchers("/api/**").authenticated()
                 it.anyRequest().denyAll()
             }

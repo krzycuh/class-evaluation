@@ -12,6 +12,7 @@ rodziców z zaleceniami.
 |----------|-----------|
 | [docs/architektura.md](docs/architektura.md) | stack, architektura, model danych (encje i powiązania), API, bezpieczeństwo/RODO, Docker, plan iteracji |
 | [docs/ekrany.md](docs/ekrany.md) | projekt UX: mapa nawigacji, opis ekranów, zasady interakcji |
+| [docs/kalendarz-projekty.md](docs/kalendarz-projekty.md) | propozycja: kalendarz (organizer + notatki, wydarzenia o różnych zasięgach) i projekty z postępem |
 | [docs/makiety.html](docs/makiety.html) | interaktywne makiety ekranów — otwórz w przeglądarce |
 
 ## Uruchomienie produkcyjne (Raspberry Pi, obrazy z GHCR)
