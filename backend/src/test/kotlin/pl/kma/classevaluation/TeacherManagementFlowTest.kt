@@ -66,6 +66,17 @@ class TeacherManagementFlowTest {
         return objectMapper.readTree(response)
     }
 
+    private fun putJson(uri: String, body: String): JsonNode {
+        val response = mockMvc.perform(
+            put(uri).with(admin).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body),
+        )
+            .andExpect(status().is2xxSuccessful)
+            .andReturn().response.getContentAsString(Charsets.UTF_8)
+        return objectMapper.readTree(response)
+    }
+
     private fun getJson(uri: String, principal: org.springframework.test.web.servlet.request.RequestPostProcessor = admin): JsonNode {
         val response = mockMvc.perform(get(uri).with(principal))
             .andExpect(status().isOk)
@@ -113,8 +124,8 @@ class TeacherManagementFlowTest {
         groupAId = postJson("/api/class-groups", """{"name":"Motylki","schoolYear":"2026/2027"}""")["id"].asText()
         groupBId = postJson("/api/class-groups", """{"name":"Biedronki","schoolYear":"2026/2027"}""")["id"].asText()
 
-        postJson("/api/class-groups/$groupAId/teachers", """{"teacherIds":["$teacherAId"]}""")
-        val assignedB = postJson("/api/class-groups/$groupBId/teachers", """{"teacherIds":["$teacherBId"]}""")
+        putJson("/api/class-groups/$groupAId/teachers", """{"teacherIds":["$teacherAId"]}""")
+        val assignedB = putJson("/api/class-groups/$groupBId/teachers", """{"teacherIds":["$teacherBId"]}""")
         assertThat(assignedB.map { it.asText() }).containsExactly(teacherBId)
     }
 
@@ -143,7 +154,7 @@ class TeacherManagementFlowTest {
     @Test
     @Order(5)
     fun `two teachers assigned to one group work on the same data`() {
-        postJson("/api/class-groups/$groupAId/teachers", """{"teacherIds":["$teacherAId","$teacherBId"]}""")
+        putJson("/api/class-groups/$groupAId/teachers", """{"teacherIds":["$teacherAId","$teacherBId"]}""")
 
         val periodId = getJson("/api/periods")[0]["id"].asText()
         val student = postJson(
