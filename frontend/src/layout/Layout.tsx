@@ -53,6 +53,9 @@ export function Layout() {
         <NavLink to="/students">
           <span className="ico">👧</span>Uczniowie
         </NavLink>
+        <NavLink to="/calendar">
+          <span className="ico">📅</span>Kalendarz
+        </NavLink>
         <NavLink to="/reports">
           <span className="ico">📄</span>Raporty
         </NavLink>

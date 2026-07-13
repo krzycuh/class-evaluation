@@ -5,6 +5,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback
 import pl.kma.classevaluation.auth.User
 import pl.kma.classevaluation.assessments.AssessmentPeriod
+import pl.kma.classevaluation.calendar.CalendarEvent
+import pl.kma.classevaluation.calendar.EventCategory
+import pl.kma.classevaluation.calendar.EventTask
+import pl.kma.classevaluation.projects.Project
+import pl.kma.classevaluation.projects.ProjectTask
 import pl.kma.classevaluation.skills.DevelopmentArea
 import pl.kma.classevaluation.skills.Skill
 import pl.kma.classevaluation.students.ClassGroup
@@ -45,6 +50,31 @@ class PersistenceConfig {
 
     @Bean
     fun periodIdCallback() = BeforeConvertCallback<AssessmentPeriod> { e ->
+        if (e.id == null) e.copy(id = UUID.randomUUID()) else e
+    }
+
+    @Bean
+    fun eventCategoryIdCallback() = BeforeConvertCallback<EventCategory> { e ->
+        if (e.id == null) e.copy(id = UUID.randomUUID()) else e
+    }
+
+    @Bean
+    fun calendarEventIdCallback() = BeforeConvertCallback<CalendarEvent> { e ->
+        if (e.id == null) e.copy(id = UUID.randomUUID()) else e
+    }
+
+    @Bean
+    fun eventTaskIdCallback() = BeforeConvertCallback<EventTask> { e ->
+        if (e.id == null) e.copy(id = UUID.randomUUID()) else e
+    }
+
+    @Bean
+    fun projectIdCallback() = BeforeConvertCallback<Project> { e ->
+        if (e.id == null) e.copy(id = UUID.randomUUID()) else e
+    }
+
+    @Bean
+    fun projectTaskIdCallback() = BeforeConvertCallback<ProjectTask> { e ->
         if (e.id == null) e.copy(id = UUID.randomUUID()) else e
     }
 }
