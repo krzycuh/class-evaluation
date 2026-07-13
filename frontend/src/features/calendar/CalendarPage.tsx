@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api } from '../../api/client'
@@ -82,6 +82,27 @@ export function CalendarPage() {
     setSelectedDay(iso(next))
   }
 
+  // Gest przesunięcia (swipe) w poziomie zmienia miesiąc. Próg 60 px i wymóg
+  // wyraźnej przewagi ruchu poziomego nad pionowym nie kolidują z przewijaniem.
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
+
+  function onTouchStart(e: React.TouchEvent) {
+    touchStart.current = e.touches.length === 1
+      ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      : null
+  }
+
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touchStart.current
+    touchStart.current = null
+    if (!start) return
+    const dx = e.changedTouches[0].clientX - start.x
+    const dy = e.changedTouches[0].clientY - start.y
+    if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) {
+      shiftMonth(dx < 0 ? 1 : -1)
+    }
+  }
+
   function toggleFilter(key: FilterKey) {
     setHidden((prev) => {
       const next = new Set(prev)
@@ -125,7 +146,13 @@ export function CalendarPage() {
         ))}
       </div>
 
-      <div className="cal-grid" role="grid" aria-label="Kalendarz miesiąca">
+      <div
+        className="cal-grid"
+        role="grid"
+        aria-label="Kalendarz miesiąca"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {WEEKDAYS.map((d) => (
           <span key={d} className="cal-wd">{d}</span>
         ))}

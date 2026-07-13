@@ -123,6 +123,58 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
+.avatar-wrap {
+  position: relative;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+}
+
+.avatar-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-width: 200px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.avatar-menu-user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.avatar-menu-user span {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.avatar-menu button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 11px 14px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.avatar-menu button:hover {
+  background: var(--bg);
+}
+
 .bottomnav {
   position: fixed;
   bottom: 0;
