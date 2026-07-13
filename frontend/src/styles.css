@@ -1172,6 +1172,13 @@ textarea:focus-visible {
   flex-wrap: wrap;
 }
 
+/* kontener gestu: przycina siatkę wyjeżdżającą poza ekran podczas animacji;
+   pan-y zostawia przeglądarce wyłącznie przewijanie pionowe */
+.cal-swipe {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
