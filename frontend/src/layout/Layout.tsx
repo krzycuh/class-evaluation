@@ -1,17 +1,20 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { NavLink, Outlet } from 'react-router-dom'
 import { api } from '../api/client'
 import { useApp } from '../AppContext'
 
 export function Layout() {
   const { user, classGroup, period, periods, setPeriodId } = useApp()
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   async function logout() {
-    await api.post('/api/auth/logout')
-    queryClient.clear()
-    navigate('/')
+    try {
+      await api.post('/api/auth/logout')
+    } finally {
+      // Twardy przeładunek zamiast nawigacji SPA: gwarantuje wyczyszczenie
+      // całego stanu (react-query, konteksty) po unieważnieniu sesji.
+      window.location.assign('/')
+    }
   }
 
   const initials = user.displayName
@@ -40,9 +43,31 @@ export function Layout() {
             </option>
           ))}
         </select>
-        <button className="avatar" onClick={logout} title={`${user.displayName} — wyloguj`}>
-          {initials}
-        </button>
+        <div className="avatar-wrap">
+          <button
+            className="avatar"
+            onClick={() => setMenuOpen((v) => !v)}
+            title={user.displayName}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+          >
+            {initials}
+          </button>
+          {menuOpen && (
+            <>
+              <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
+              <div className="avatar-menu" role="menu">
+                <div className="avatar-menu-user">
+                  <strong>{user.displayName}</strong>
+                  <span>{user.email}</span>
+                </div>
+                <button role="menuitem" onClick={logout}>
+                  Wyloguj
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </header>
 
       <main className="content">
