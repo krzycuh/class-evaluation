@@ -68,6 +68,10 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      # Nazwa i port serwisu backendu podstawiane do konfiguracji nginx (envsubst).
+      BACKEND_HOST: ${BACKEND_HOST:-backend}
+      BACKEND_PORT: ${BACKEND_PORT:-8080}
     ports:
       - "${APP_PORT:-8000}:80"
     logging:
