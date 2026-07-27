@@ -1,3 +1,9 @@
+# Szablon nginx — obraz nginx robi envsubst na plikach z /etc/nginx/templates/*.template
+# i zapisuje wynik do /etc/nginx/conf.d/ (bez rozszerzenia .template).
+#
+# Podmieniane są tylko ${...} wskazujące na zdefiniowane zmienne środowiskowe
+# (tu: BACKEND_HOST, BACKEND_PORT). Zmienne nginxowe zostawiamy bez klamer
+# ($host, $remote_addr, ...), żeby envsubst ich nie ruszył.
 server {
     listen 80;
     server_name _;
@@ -12,7 +18,7 @@ server {
     add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:" always;
 
     location /api/ {
-        proxy_pass http://backend:8080;
+        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
